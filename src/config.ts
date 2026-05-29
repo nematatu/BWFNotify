@@ -36,4 +36,3 @@ export function bwfHeaders(env: Env): Headers {
 
 	return headers;
 }
-

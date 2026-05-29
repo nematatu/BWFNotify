@@ -9,7 +9,7 @@ export async function notifyDiscord(webhookUrl: string, match: DiscordMatch): Pr
   await postDiscord(webhookUrl, discordPayload(match));
 }
 
-function discordPayload(match: DiscordMatch) {
+export function discordPayload(match: DiscordMatch) {
   const lines = [
     `BWF notification: ${match.names.join(" vs ") || `match ${match.id}`}`,
     `matchId: ${match.id}`,
@@ -38,7 +38,7 @@ async function postDiscord(webhookUrl: string, payload: unknown): Promise<void> 
   }
 
   if (!response.ok) {
-    throw new Error(`Discord request failed: ${response.status} ${response.statusText}`);
+    throw new Error(`Discord request failed: ${response.status} ${response.statusText}; body=${await response.text()}`);
   }
 }
 

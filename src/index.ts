@@ -81,16 +81,33 @@ app.get("/run", async (c) => {
 });
 
 app.get("/", (c) =>
-	c.text(
-		[
-			"BWFNotify worker",
-			"GET /health",
-			"GET /debug/bwf",
-			"GET /debug/bwf/summary",
-			"GET /debug/day-matches",
-			"GET /debug/day-matches/summary",
-			"GET /run",
-		].join("\n") + "\n",
+	c.html(
+		`
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BWFNotify worker</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 40px; line-height: 1.5; }
+      h1 { margin-bottom: 24px; }
+      nav { display: grid; gap: 12px; max-width: 360px; }
+      a { display: block; padding: 10px 14px; border: 1px solid #ccc; border-radius: 6px; color: #111; text-decoration: none; }
+      a:hover { background: #f4f4f4; }
+    </style>
+  </head>
+  <body>
+    <h1>BWFNotify worker</h1>
+    <nav>
+      <a href="/debug/bwf">BWF live raw</a>
+      <a href="/debug/bwf/summary">BWF live summary</a>
+      <a href="/debug/day-matches">Day matches raw</a>
+      <a href="/debug/day-matches/summary">Day matches summary</a>
+      <a href="/run">Run notification check</a>
+    </nav>
+  </body>
+</html>`,
 	),
 );
 

@@ -1,2 +1,7 @@
-*.rbc
-*.fyc
+node_modules/
+.wrangler/
+.dev.vars
+dist/
+
+.env
+.dev.vars

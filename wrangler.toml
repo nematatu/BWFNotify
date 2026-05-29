@@ -1,0 +1,23 @@
+name = "bwfnotify"
+main = "src/index.ts"
+compatibility_date = "2026-05-29"
+
+[triggers]
+crons = ["*/1 * * * *"]
+
+[vars]
+# BWF側の内部APIは公開APIとして保証されていない可能性があるため、
+# 動かなくなった場合はこのURLを差し替えてください。
+BWF_LIVE_URL = "https://extranet-lv.bwfbadminton.com/api/match-center/vue-current-live"
+BWF_DAY_MATCHES_URL = "https://extranet-lv.bwfbadminton.com/api/tournaments/day-matches"
+BWF_REFERER = "https://bwfbadminton.com/"
+BWF_MATCH_ORDER = "2"
+BWF_MATCH_COURT = "0"
+TARGET_COUNTRY_CODES = "JPN"
+MAX_DISCORD_MESSAGES_PER_RUN = "20"
+NOTIFIED_TTL_SECONDS = "2592000"
+
+[[kv_namespaces]]
+binding = "NOTIFIED_MATCHES"
+id = "00000000000000000000000000000000"
+preview_id = "00000000000000000000000000000000"

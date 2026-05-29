@@ -1,0 +1,20 @@
+{
+  "name": "bwfnotify",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "WRANGLER_LOG_PATH=.wrangler/logs wrangler dev",
+    "deploy": "wrangler deploy",
+    "dry-run": "WRANGLER_LOG_PATH=.wrangler/logs wrangler deploy --dry-run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "^4.10.7"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260529.0",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.20.0"
+  }
+}

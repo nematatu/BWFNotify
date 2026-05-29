@@ -5,6 +5,7 @@ import {
 	bwfHeaders,
 	type Env,
 } from "./config";
+import { notifyDiscord } from "./discord";
 
 type JsonObject = Record<string, unknown>;
 type EventType = "scheduled" | "live" | "completed" | "unknown";
@@ -126,15 +127,16 @@ async function run(
 			throw new Error("NOTIFIED_MATCHES KV binding is not configured");
 
 		const targets = extractTargets((await fetchSchedule(env)).results, env);
+		const liveTargets = targets.filter((match) => match.eventType === "live");
 		const limit = positiveInt(env.MAX_DISCORD_MESSAGES_PER_RUN, 20);
 		const ttl = positiveInt(env.NOTIFIED_TTL_SECONDS, 60 * 60 * 24 * 30);
 		let notified = 0;
 
-		for (const match of targets.slice(0, limit)) {
+		for (const match of liveTargets.slice(0, limit)) {
 			const key = `notified:${match.id}:${match.eventType}`;
 			if (await env.NOTIFIED_MATCHES.get(key)) continue;
 
-			await postDiscord(env.DISCORD_WEBHOOK_URL, discordPayload(match));
+			await notifyDiscord(env.DISCORD_WEBHOOK_URL, match);
 			await env.NOTIFIED_MATCHES.put(
 				key,
 				JSON.stringify({ notifiedAt: new Date().toISOString() }),
@@ -145,7 +147,7 @@ async function run(
 			notified++;
 		}
 
-		return { ok: true, checked: targets.length, notified };
+		return { ok: true, checked: liveTargets.length, notified };
 	} catch (error) {
 		console.error(error);
 		return { ok: false, checked: 0, notified: 0, error: message(error) };
@@ -289,51 +291,6 @@ async function debugFetch(env: Env, url: string) {
 	}
 }
 
-async function postDiscord(webhookUrl: string, payload: unknown) {
-	const response = await fetch(webhookUrl, {
-		method: "POST",
-		headers: { "content-type": "application/json" },
-		body: JSON.stringify(payload),
-	});
-
-	if (response.status === 429) {
-		const retryAfter = await retryAfterSeconds(response);
-		if (retryAfter > 30)
-			throw new Error(`Discord rate limited; retry_after=${retryAfter}s`);
-		await sleep(Math.max(1, retryAfter) * 1000);
-		return postDiscord(webhookUrl, payload);
-	}
-
-	if (!response.ok)
-		throw new Error(
-			`Discord request failed: ${response.status} ${response.statusText}`,
-		);
-}
-
-function discordPayload(match: MatchCandidate) {
-	const lines = [
-		`BWF notification: ${match.names.join(" vs ") || `match ${match.id}`}`,
-		`matchId: ${match.id}`,
-		`status: ${match.status}`,
-		`event: ${match.eventType}`,
-	];
-	return {
-		content: lines.join("\n").slice(0, 1900),
-		allowed_mentions: { parse: [] },
-	};
-}
-
-async function retryAfterSeconds(response: Response) {
-	const header = Number(response.headers.get("retry-after"));
-	if (Number.isFinite(header)) return header;
-	try {
-		const body = (await response.json()) as { retry_after?: unknown };
-		return typeof body.retry_after === "number" ? body.retry_after : 5;
-	} catch {
-		return 5;
-	}
-}
-
 function rawResponse(result: Awaited<ReturnType<typeof bwfText>>) {
 	return new Response(result.bodyText, {
 		status: result.response.status,
@@ -409,8 +366,4 @@ function todayJst() {
 
 function message(error: unknown) {
 	return error instanceof Error ? error.message : String(error);
-}
-
-function sleep(ms: number) {
-	return new Promise((resolve) => setTimeout(resolve, ms));
 }

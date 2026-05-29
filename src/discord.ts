@@ -3,6 +3,16 @@ type DiscordMatch = {
   status: string;
   eventType: string;
   names: string[];
+  match: {
+    tournamentName?: string;
+    team1?: Team;
+    team2?: Team;
+  };
+};
+
+type Team = {
+  countryCode?: string;
+  players?: Array<{ nameDisplay?: string; countryCode?: string }>;
 };
 
 export async function notifyDiscord(webhookUrl: string, match: DiscordMatch): Promise<void> {
@@ -10,15 +20,49 @@ export async function notifyDiscord(webhookUrl: string, match: DiscordMatch): Pr
 }
 
 export function discordPayload(match: DiscordMatch) {
-  const lines = [
-    `BWF notification: ${match.names.join(" vs ") || `match ${match.id}`}`,
-    `matchId: ${match.id}`,
-    `status: ${match.status}`,
-    `event: ${match.eventType}`
-  ];
+  const lines = [`[${match.match.tournamentName || "BWF"}]`, formatCard(match.match.team1, match.match.team2)];
 
   return { content: lines.join("\n").slice(0, 1900), allowed_mentions: { parse: [] } };
 }
+
+function formatCard(team1?: Team, team2?: Team): string {
+  const left = formatTeam(team1);
+  const right = formatTeam(team2);
+  return `${left} vs ${right}`;
+}
+
+function formatTeam(team?: Team): string {
+  const names = (team?.players || []).map((player) => player.nameDisplay).filter(Boolean).join(" / ");
+  const code = team?.countryCode || team?.players?.find((player) => player.countryCode)?.countryCode;
+  return `${names || "TBD"} ${flagEmoji(code)}`.trim();
+}
+
+function flagEmoji(countryCode?: string): string {
+  if (!countryCode) {
+    return "";
+  }
+
+  const code = COUNTRY_TO_ISO2[countryCode.toUpperCase()] || countryCode.toUpperCase();
+  if (!/^[A-Z]{2}$/.test(code)) {
+    return "";
+  }
+
+  return [...code].map((char) => String.fromCodePoint(char.charCodeAt(0) + 127397)).join("");
+}
+
+const COUNTRY_TO_ISO2: Record<string, string> = {
+  CHN: "CN",
+  DEN: "DK",
+  ENG: "GB",
+  INA: "ID",
+  JPN: "JP",
+  KOR: "KR",
+  MAS: "MY",
+  SUI: "CH",
+  THA: "TH",
+  TPE: "TW",
+  USA: "US"
+};
 
 async function postDiscord(webhookUrl: string, payload: unknown): Promise<void> {
   const response = await fetch(webhookUrl, {

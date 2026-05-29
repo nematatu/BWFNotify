@@ -6,8 +6,18 @@ import {
 	type Env,
 } from "./config";
 import { notifyDiscord } from "./discord";
+import {
+	arrayOf,
+	csv,
+	type JsonObject,
+	looksJson,
+	message,
+	object,
+	positiveInt,
+	preview,
+	todayJst,
+} from "./utils";
 
-type JsonObject = Record<string, unknown>;
 type EventType = "scheduled" | "live" | "completed" | "unknown";
 
 type Player = {
@@ -326,44 +336,6 @@ function describe(result: Awaited<ReturnType<typeof bwfText>>) {
 	return `${result.response.status} ${result.response.statusText}; content-type=${result.contentType}; body=${preview(result.bodyText)}`;
 }
 
-function object(value: unknown): JsonObject {
-	return typeof value === "object" && value !== null && !Array.isArray(value)
-		? (value as JsonObject)
-		: {};
-}
-
-function arrayOf<T>(value: unknown): T[] {
-	return Array.isArray(value) ? (value as T[]) : [];
-}
-
 function isJson(result: Awaited<ReturnType<typeof bwfText>>) {
 	return result.contentType.includes("json") || looksJson(result.bodyText);
-}
-
-function looksJson(value: string) {
-	return /^[\s]*[{\[]/.test(value);
-}
-
-function preview(value: string) {
-	return value.replace(/\s+/g, " ").trim().slice(0, 240);
-}
-
-function positiveInt(value: string | undefined, fallback: number) {
-	const parsed = Number.parseInt(value || "", 10);
-	return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
-}
-
-function csv(value: string) {
-	return value
-		.split(",")
-		.map((item) => item.trim())
-		.filter(Boolean);
-}
-
-function todayJst() {
-	return new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
-}
-
-function message(error: unknown) {
-	return error instanceof Error ? error.message : String(error);
 }

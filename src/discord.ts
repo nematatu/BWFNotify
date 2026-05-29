@@ -20,9 +20,9 @@ export async function notifyDiscord(webhookUrl: string, match: DiscordMatch): Pr
 }
 
 export function discordPayload(match: DiscordMatch) {
-  const lines = [`[${match.match.tournamentName || "BWF"}]`, formatCard(match.match.team1, match.match.team2)];
+  const lines = ["@everyone", `[${match.match.tournamentName || "BWF"}]`, formatCard(match.match.team1, match.match.team2)];
 
-  return { content: lines.join("\n").slice(0, 1900), allowed_mentions: { parse: [] } };
+  return { content: lines.join("\n").slice(0, 1900), allowed_mentions: { parse: ["everyone"] } };
 }
 
 function formatCard(team1?: Team, team2?: Team): string {

@@ -5,7 +5,7 @@ import {
 	bwfHeaders,
 	type Env,
 } from "./config";
-import { notifyDiscord } from "./discord";
+import { notifyDiscord, notifyDiscordMatchTest } from "./discord";
 import {
 	arrayOf,
 	csv,
@@ -90,6 +90,14 @@ app.get("/run", async (c) => {
 	const result = await run(c.env);
 	return c.json(result, result.ok ? 200 : 500);
 });
+app.get("/debug/discord/match-test", async (c) => {
+	try {
+		await notifyDiscordMatchTest(c.env.DISCORD_WEBHOOK_URL);
+		return c.json({ ok: true, transport: "discord-webhook" });
+	} catch (error) {
+		return c.json({ ok: false, error: message(error) }, 500);
+	}
+});
 
 app.get("/", (c) =>
 	c.html(
@@ -115,6 +123,7 @@ app.get("/", (c) =>
       <a href="/debug/bwf/summary">BWF live summary</a>
       <a href="/debug/day-matches">Day matches raw</a>
       <a href="/debug/day-matches/summary">Day matches summary</a>
+      <a href="/debug/discord/match-test">Discord match test</a>
       <a href="/run">Run notification check</a>
     </nav>
   </body>

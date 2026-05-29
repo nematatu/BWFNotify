@@ -19,6 +19,26 @@ export async function notifyDiscord(webhookUrl: string, match: DiscordMatch): Pr
   await postDiscord(webhookUrl, discordPayload(match));
 }
 
+export async function notifyDiscordMatchTest(webhookUrl: string): Promise<void> {
+  await notifyDiscord(webhookUrl, {
+    id: `test-${Date.now()}`,
+    status: "In Progress",
+    eventType: "live",
+    names: ["Tomoka MIYAZAKI", "CHEN Yu Fei"],
+    match: {
+      tournamentName: "BWFNotify Test",
+      team1: {
+        countryCode: "JPN",
+        players: [{ nameDisplay: "Tomoka MIYAZAKI", countryCode: "JPN" }]
+      },
+      team2: {
+        countryCode: "CHN",
+        players: [{ nameDisplay: "CHEN Yu Fei", countryCode: "CHN" }]
+      }
+    }
+  });
+}
+
 export function discordPayload(match: DiscordMatch) {
   const lines = ["@everyone", `[${match.match.tournamentName || "BWF"}]`, formatCard(match.match.team1, match.match.team2)];
 

@@ -107,7 +107,12 @@ const COUNTRY_TO_ISO2: Record<string, string> = {
 async function postDiscord(
 	webhookUrl: string,
 	payload: unknown,
+	retried = false,
 ): Promise<void> {
+	if (!webhookUrl) {
+		throw new Error("DISCORD_WEBHOOK_URL is not configured");
+	}
+
 	const response = await fetch(webhookUrl, {
 		method: "POST",
 		headers: { "content-type": "application/json" },
@@ -116,12 +121,12 @@ async function postDiscord(
 
 	if (response.status === 429) {
 		const retryAfter = await retryAfterSeconds(response);
-		if (retryAfter > 30) {
+		if (retried || retryAfter > 30) {
 			throw new Error(`Discord rate limited; retry_after=${retryAfter}s`);
 		}
 
 		await sleep(Math.max(1, retryAfter) * 1000);
-		return postDiscord(webhookUrl, payload);
+		return postDiscord(webhookUrl, payload, true);
 	}
 
 	if (!response.ok) {

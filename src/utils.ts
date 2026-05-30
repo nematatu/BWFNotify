@@ -18,12 +18,13 @@ export function preview(value: string): string {
 	return value.replace(/\s+/g, " ").trim().slice(0, 240);
 }
 
-export function positiveInt(
-	value: string | undefined,
-	fallback: number,
-): number {
+export function positiveInt(value: string | undefined, name = "value"): number {
 	const parsed = Number.parseInt(value || "", 10);
-	return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+	if (Number.isFinite(parsed) && parsed > 0) {
+		return parsed;
+	}
+
+	throw new Error(`${name} must be a positive integer`);
 }
 
 export function csv(value: string): string[] {

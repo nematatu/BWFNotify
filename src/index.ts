@@ -1,10 +1,5 @@
 import { Hono } from "hono";
-import {
-	BWF_DAY_MATCHES_URL,
-	BWF_LIVE_URL,
-	bwfHeaders,
-	type Env,
-} from "./config";
+import { bwfHeaders, type Env } from "./config";
 import { notifyDiscord, notifyDiscordMatchTest } from "./discord";
 import {
 	arrayOf,
@@ -62,13 +57,15 @@ type MatchCandidate = {
 
 const app = new Hono<{ Bindings: Env }>();
 
-app.get("/debug/bwf", async (c) =>
-	rawResponse(await bwfText(c.env, c.env.BWF_LIVE_URL || BWF_LIVE_URL)),
-);
-app.get("/debug/bwf/summary", async (c) =>
-	c.json(await debugFetch(c.env, c.env.BWF_LIVE_URL || BWF_LIVE_URL)),
-);
-app.get("/debug/day-matches", async (c) => c.json(await fetchSchedule(c.env)));
+app.get("/debug/bwf", async (c) => {
+	return rawResponse(await bwfText(c.env, c.env.BWF_LIVE_URL));
+});
+app.get("/debug/bwf/summary", async (c) => {
+	return c.json(await debugFetch(c.env, c.env.BWF_LIVE_URL));
+});
+app.get("/debug/day-matches", async (c) => {
+	return c.json(await fetchSchedule(c.env));
+});
 app.get("/debug/day-matches/summary", async (c) => {
 	const schedule = await fetchSchedule(c.env);
 	const targets = extractTargets(schedule.results, c.env);
@@ -147,8 +144,11 @@ async function run(
 
 		const targets = extractTargets((await fetchSchedule(env)).results, env);
 		const liveTargets = targets.filter((match) => match.eventType === "live");
-		const limit = positiveInt(env.MAX_DISCORD_MESSAGES_PER_RUN, 20);
-		const ttl = positiveInt(env.NOTIFIED_TTL_SECONDS, 60 * 60 * 24 * 30);
+		const limit = positiveInt(
+			env.MAX_DISCORD_MESSAGES_PER_RUN,
+			"MAX_DISCORD_MESSAGES_PER_RUN",
+		);
+		const ttl = positiveInt(env.NOTIFIED_TTL_SECONDS, "NOTIFIED_TTL_SECONDS");
 		let notified = 0;
 
 		for (const match of liveTargets.slice(0, limit)) {
@@ -175,9 +175,7 @@ async function run(
 
 async function fetchSchedule(env: Env) {
 	const date = env.BWF_MATCH_DATE || todayJst();
-	const tournaments = tournamentsFrom(
-		await bwfJson(env, env.BWF_LIVE_URL || BWF_LIVE_URL),
-	);
+	const tournaments = tournamentsFrom(await bwfJson(env, env.BWF_LIVE_URL));
 	const results: BwfMatch[] = [];
 	const summaries: Array<{ code: string; name?: string; matches: number }> = [];
 
@@ -193,9 +191,7 @@ async function fetchSchedule(env: Env) {
 }
 
 function extractTargets(matches: BwfMatch[], env: Env): MatchCandidate[] {
-	const countries = csv(env.TARGET_COUNTRY_CODES || "JPN").map((v) =>
-		v.toUpperCase(),
-	);
+	const countries = csv(env.TARGET_COUNTRY_CODES).map((v) => v.toUpperCase());
 	const seen = new Set<string>();
 	const targets: MatchCandidate[] = [];
 
@@ -283,11 +279,11 @@ async function bwfText(env: Env, url: string) {
 }
 
 function dayMatchesUrl(env: Env, tournamentCode: string, date: string) {
-	const url = new URL(env.BWF_DAY_MATCHES_URL || BWF_DAY_MATCHES_URL);
+	const url = new URL(env.BWF_DAY_MATCHES_URL);
 	url.searchParams.set("tournamentCode", tournamentCode);
 	url.searchParams.set("date", date);
-	url.searchParams.set("order", env.BWF_MATCH_ORDER || "2");
-	url.searchParams.set("court", env.BWF_MATCH_COURT || "0");
+	url.searchParams.set("order", env.BWF_MATCH_ORDER);
+	url.searchParams.set("court", env.BWF_MATCH_COURT);
 	return url.toString();
 }
 

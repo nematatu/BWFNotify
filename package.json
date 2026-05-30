@@ -1,15 +1,35 @@
 {
 	"name": "bwfnotify",
 	"version": "0.1.0",
-	"private": true,
+	"description": "Self-hosted BWF match notification worker for Discord.",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/nmtt-sandbox/BWFNotify.git"
+	},
+	"bugs": {
+		"url": "https://github.com/nmtt-sandbox/BWFNotify/issues"
+	},
+	"homepage": "https://github.com/nmtt-sandbox/BWFNotify#readme",
+	"keywords": [
+		"badminton",
+		"bwf",
+		"cloudflare-workers",
+		"discord",
+		"notification"
+	],
 	"type": "module",
 	"scripts": {
 		"dev": "WRANGLER_LOG_PATH=.wrangler/logs wrangler dev",
+		"dev:local": "WRANGLER_LOG_PATH=.wrangler/logs wrangler dev --config wrangler.local.toml",
 		"deploy": "wrangler deploy",
+		"deploy:local": "wrangler deploy --config wrangler.local.toml",
 		"dry-run": "WRANGLER_LOG_PATH=.wrangler/logs wrangler deploy --dry-run",
+		"dry-run:local": "WRANGLER_LOG_PATH=.wrangler/logs wrangler deploy --dry-run --config wrangler.local.toml",
 		"build": "tsc --noEmit",
 		"prepare": "husky",
-		"check": "biome check --write"
+		"check": "biome check",
+		"check:fix": "biome check --write"
 	},
 	"dependencies": {
 		"hono": "^4.10.7"

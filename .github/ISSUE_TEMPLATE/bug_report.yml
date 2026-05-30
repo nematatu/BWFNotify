@@ -1,0 +1,38 @@
+name: Bug report
+description: Report a reproducible problem.
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Include commands, endpoint paths, and relevant configuration names. Do not include secrets.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Cloudflare Workers/Wrangler/Bun versions, if known.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety check
+      options:
+        - label: I did not include Discord webhook URLs, BWF cookies, Cloudflare credentials, or KV namespace IDs.
+          required: true

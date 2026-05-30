@@ -40,19 +40,38 @@ This repository includes `mise.toml`. With `mise`:
 mise install
 ```
 
-## Setup
+## Usage
+
+### 1. Initial Setup
+
+Install dependencies.
 
 ```sh
 bun install
+```
+
+Log in to Cloudflare.
+
+```sh
 bunx wrangler login
+```
+
+Create KV namespaces for notification dedupe. `--update-config` adds the binding to `wrangler.toml`.
+
+```sh
 bunx wrangler kv namespace create NOTIFIED_MATCHES --binding NOTIFIED_MATCHES --update-config
 bunx wrangler kv namespace create NOTIFIED_MATCHES --preview --binding NOTIFIED_MATCHES --update-config
+```
+
+Register your Discord Webhook URL as a Cloudflare Secret.
+
+```sh
 bunx wrangler secret put DISCORD_WEBHOOK_URL
 ```
 
-`--update-config` adds the KV binding to `wrangler.toml`.
+### 2. Check Locally
 
-## Local Development
+Create a local secrets file.
 
 ```sh
 cp .dev.vars.example .dev.vars
@@ -64,27 +83,34 @@ Set your Discord Webhook URL in `.dev.vars`.
 DISCORD_WEBHOOK_URL=<your-discord-webhook-url>
 ```
 
-Start:
+Start the Worker.
 
 ```sh
 bun run dev
 ```
 
-Check:
+Check from another terminal.
 
 ```sh
 curl http://localhost:8787/debug/day-matches/summary
 curl http://localhost:8787/run
 ```
 
-## Deploy
+### 3. Deploy
+
+Validate deployment settings first.
 
 ```sh
 bun run dry-run
+```
+
+Deploy.
+
+```sh
 bun run deploy
 ```
 
-The default Cron trigger in `wrangler.toml` runs every minute.
+After deployment, the Cron trigger in `wrangler.toml` runs every minute by default.
 
 ## Configuration
 

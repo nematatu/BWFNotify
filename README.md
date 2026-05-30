@@ -40,19 +40,38 @@ Cloudflare Workers Cron
 mise install
 ```
 
-## セットアップ
+## 使い方
+
+### 1. 初回準備
+
+依存関係を入れます。
 
 ```sh
 bun install
+```
+
+Cloudflare にログインします。
+
+```sh
 bunx wrangler login
+```
+
+通知済み試合を保存するKVを作ります。`--update-config` により `wrangler.toml` へ binding が追記されます。
+
+```sh
 bunx wrangler kv namespace create NOTIFIED_MATCHES --binding NOTIFIED_MATCHES --update-config
 bunx wrangler kv namespace create NOTIFIED_MATCHES --preview --binding NOTIFIED_MATCHES --update-config
+```
+
+Discord Webhook URL をCloudflare Secretに登録します。
+
+```sh
 bunx wrangler secret put DISCORD_WEBHOOK_URL
 ```
 
-KV binding は `--update-config` により `wrangler.toml` に追記されます。
+### 2. ローカルで確認
 
-## ローカル実行
+ローカル用Secretファイルを作ります。
 
 ```sh
 cp .dev.vars.example .dev.vars
@@ -64,27 +83,34 @@ cp .dev.vars.example .dev.vars
 DISCORD_WEBHOOK_URL=<your-discord-webhook-url>
 ```
 
-起動:
+Workerを起動します。
 
 ```sh
 bun run dev
 ```
 
-確認:
+別ターミナルで確認します。
 
 ```sh
 curl http://localhost:8787/debug/day-matches/summary
 curl http://localhost:8787/run
 ```
 
-## デプロイ
+### 3. デプロイ
+
+デプロイ前に設定を検証します。
 
 ```sh
 bun run dry-run
+```
+
+問題なければデプロイします。
+
+```sh
 bun run deploy
 ```
 
-`wrangler.toml` の Cron 設定により、デフォルトでは1分ごとに通知チェックを実行します。
+デプロイ後は `wrangler.toml` の Cron 設定により、デフォルトでは1分ごとに通知チェックを実行します。
 
 ## 設定
 

@@ -25,8 +25,8 @@ BWFNotify uses endpoints that appear to be internal BWF APIs. This repository do
 
 ```sh
 bun install
-bunx wrangler kv namespace create NOTIFIED_MATCHES
-bunx wrangler kv namespace create NOTIFIED_MATCHES --preview
+bunx wrangler kv namespace create NOTIFIED_MATCHES --binding NOTIFIED_MATCHES --update-config
+bunx wrangler kv namespace create NOTIFIED_MATCHES --preview --binding NOTIFIED_MATCHES --update-config
 bunx wrangler secret put DISCORD_WEBHOOK_URL
 ```
 
@@ -36,14 +36,7 @@ If BWF requires a cookie:
 bunx wrangler secret put BWF_COOKIE
 ```
 
-Replace KV IDs in `wrangler.toml`.
-
-```toml
-[[kv_namespaces]]
-binding = "NOTIFIED_MATCHES"
-id = "your-kv-namespace-id"
-preview_id = "your-preview-kv-namespace-id"
-```
+Wrangler updates `wrangler.toml` with the KV binding.
 
 ## Local
 

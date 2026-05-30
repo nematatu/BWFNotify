@@ -15,11 +15,3 @@ BWF_MATCH_COURT = "0"
 TARGET_COUNTRY_CODES = "JPN"
 MAX_DISCORD_MESSAGES_PER_RUN = "20"
 NOTIFIED_TTL_SECONDS = "2592000"
-
-[[kv_namespaces]]
-binding = "NOTIFIED_MATCHES"
-# Replace these with the IDs printed by:
-#   npx wrangler kv namespace create NOTIFIED_MATCHES
-#   npx wrangler kv namespace create NOTIFIED_MATCHES --preview
-id = "replace-with-your-kv-namespace-id"
-preview_id = "replace-with-your-preview-kv-namespace-id"

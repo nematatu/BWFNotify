@@ -34,7 +34,7 @@ Cloudflare Workers Cron
 - Discord Webhook URL
 - Bun
 
-このリポジトリには `mise.toml` があります。`mise` を使う場合:
+`mise` を使う場合:
 
 ```sh
 mise install
@@ -60,7 +60,6 @@ bunx wrangler login
 
 ```sh
 bunx wrangler kv namespace create NOTIFIED_MATCHES --binding NOTIFIED_MATCHES --update-config
-bunx wrangler kv namespace create NOTIFIED_MATCHES --preview --binding NOTIFIED_MATCHES --update-config
 ```
 
 Discord Webhook URL をCloudflare Secretに登録します。

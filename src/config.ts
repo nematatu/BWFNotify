@@ -6,7 +6,6 @@ export type Env = {
 	BWF_MATCH_DATE?: string;
 	BWF_MATCH_ORDER: string;
 	BWF_MATCH_COURT: string;
-	BWF_COOKIE?: string;
 	BWF_REFERER: string;
 	BWF_USER_AGENT: string;
 	TARGET_COUNTRY_CODES: string;
@@ -21,10 +20,6 @@ export function bwfHeaders(env: Env): Headers {
 		referer: env.BWF_REFERER,
 		"user-agent": env.BWF_USER_AGENT,
 	});
-
-	if (env.BWF_COOKIE) {
-		headers.set("cookie", env.BWF_COOKIE);
-	}
 
 	return headers;
 }

@@ -11,4 +11,4 @@ bun run build
 bun run check
 ```
 
-Do not commit Discord Webhook URLs, BWF cookies, Cloudflare credentials, or real KV IDs.
+Do not commit Discord Webhook URLs, Cloudflare credentials, or real KV IDs.

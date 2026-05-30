@@ -19,7 +19,20 @@ This is self-hosted software. The maintainer does not provide a public notificat
 
 ## Notice
 
-BWFNotify uses endpoints that appear to be internal BWF APIs. This repository does not confirm that they are stable public APIs. URL, cookie, or response changes may break the app.
+BWFNotify uses endpoints that appear to be internal BWF APIs. This repository does not confirm that they are stable public APIs. URL or response changes may break the app.
+
+## Requirements
+
+- Cloudflare account
+- Discord Webhook URL
+- Bun
+- Wrangler is installed as a project dependency
+
+With `mise`:
+
+```sh
+mise install
+```
 
 ## Setup
 
@@ -28,12 +41,6 @@ bun install
 bunx wrangler kv namespace create NOTIFIED_MATCHES --binding NOTIFIED_MATCHES --update-config
 bunx wrangler kv namespace create NOTIFIED_MATCHES --preview --binding NOTIFIED_MATCHES --update-config
 bunx wrangler secret put DISCORD_WEBHOOK_URL
-```
-
-If BWF requires a cookie:
-
-```sh
-bunx wrangler secret put BWF_COOKIE
 ```
 
 Wrangler updates `wrangler.toml` with the KV binding.
@@ -48,7 +55,6 @@ bun run dev
 `.dev.vars`:
 
 ```dotenv
-BWF_COOKIE=
 DISCORD_WEBHOOK_URL=<your-discord-webhook-url>
 ```
 
@@ -78,7 +84,6 @@ See `[vars]` in `wrangler.toml`.
 Secrets:
 
 - `DISCORD_WEBHOOK_URL`
-- `BWF_COOKIE` optional
 
 ## Contributing
 

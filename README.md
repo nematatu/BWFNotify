@@ -18,7 +18,20 @@ English: [README.en.md](README.en.md)
 
 ## Notice
 
-BWFNotify は BWF の内部APIと思われるエンドポイントを利用しています。公開APIとして安定提供されていることは確認できていません。URL変更、Cookie要求、レスポンス形式変更などで動かなくなる可能性があります。
+BWFNotify は BWF の内部APIと思われるエンドポイントを利用しています。公開APIとして安定提供されていることは確認できていません。URL変更、レスポンス形式変更などで動かなくなる可能性があります。
+
+## Requirements
+
+- Cloudflare アカウント
+- Discord Webhook URL
+- Bun
+- Wrangler は依存関係としてインストールされます
+
+`mise` を使う場合:
+
+```sh
+mise install
+```
 
 ## Setup
 
@@ -27,12 +40,6 @@ bun install
 bunx wrangler kv namespace create NOTIFIED_MATCHES --binding NOTIFIED_MATCHES --update-config
 bunx wrangler kv namespace create NOTIFIED_MATCHES --preview --binding NOTIFIED_MATCHES --update-config
 bunx wrangler secret put DISCORD_WEBHOOK_URL
-```
-
-BWF取得にCookieが必要な場合:
-
-```sh
-bunx wrangler secret put BWF_COOKIE
 ```
 
 KV binding は Wrangler が `wrangler.toml` に追記します。
@@ -47,7 +54,6 @@ bun run dev
 `.dev.vars`:
 
 ```dotenv
-BWF_COOKIE=
 DISCORD_WEBHOOK_URL=<your-discord-webhook-url>
 ```
 
@@ -77,7 +83,6 @@ bun run deploy
 Secret:
 
 - `DISCORD_WEBHOOK_URL`
-- `BWF_COOKIE` optional
 
 ## Contributing
 
